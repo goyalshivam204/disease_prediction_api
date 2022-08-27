@@ -1,10 +1,12 @@
 
 from tokenize import Intnumber
-from fastapi import FastAPI
+from fastapi import Form, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pickle
 import json
+
+
 
 
 app = FastAPI()
@@ -42,7 +44,6 @@ def diabetes_pred(input_parameters : diabetes_model_input):
     
     input_data = input_parameters.json()
     input_dictionary = json.loads(input_data)
-    
     preg = input_dictionary['Pregnancies']
     glu = input_dictionary['Glucose']
     bp = input_dictionary['BloodPressure']
@@ -56,12 +57,12 @@ def diabetes_pred(input_parameters : diabetes_model_input):
     input_list = [preg, glu, bp, skin, insulin, bmi, dpf, age]
     
     prediction = diabetes_model.predict([input_list])
-    
     if prediction[0] == 0:
-        return 'The person is not Diabetic'
+        return 0
     
     else:
-        return 'The person is Diabetic'
+        return 1
+    
 
 
 
@@ -91,12 +92,13 @@ class heart_model_input(BaseModel):
 heart_model = pickle.load(open('heart_model.sav','rb'))
 
 
+
+
 @app.post('/heart_prediction')
-def heart_pred(input_parameters : heart_model_input):
+def heart_pred(input_parameters:  heart_model_input):
     input_data = input_parameters.json()
     input_dictionary = json.loads(input_data)
     
-
 
 
     age= input_dictionary['age']
@@ -117,10 +119,11 @@ def heart_pred(input_parameters : heart_model_input):
     input_list = [age, sex, cp,trestbps, chol,fbs,restecg,thalach, exang,oldpeak, slope,ca,thal]
     
     prediction = heart_model.predict([input_list])
-    
     if prediction[0] == 0:
-        return 'You have heart problem'
+        return 0
     
     else:
-        return 'You have heart problem'
+        return 1
 
+
+    
